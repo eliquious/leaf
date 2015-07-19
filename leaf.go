@@ -78,16 +78,16 @@ func NewLeaf(file string) (KeyValueDatabase, error) {
     if err != nil {
         return nil, err
     }
-    return &LeafDB{db}, nil
+    return &DB{db}, nil
 }
 
-// LeafDB wraps a BoltDB connection
-type LeafDB struct {
+// DB wraps a BoltDB connection
+type DB struct {
     db *bolt.DB
 }
 
 // GetOrCreateKeyspace returns a Keyspace implementation for the underlying BoltDB instance.
-func (l *LeafDB) GetOrCreateKeyspace(name string) (ks Keyspace, err error) {
+func (l *DB) GetOrCreateKeyspace(name string) (ks Keyspace, err error) {
     err = l.db.Update(func(tx *bolt.Tx) error {
         _, er := tx.CreateBucketIfNotExists([]byte(name))
 
@@ -98,12 +98,12 @@ func (l *LeafDB) GetOrCreateKeyspace(name string) (ks Keyspace, err error) {
 }
 
 // Close closes the database connection
-func (l *LeafDB) Close() error {
+func (l *DB) Close() error {
     return l.db.Close()
 }
 
 // DeleteKeyspace removes a keyspace from the database
-func (l *LeafDB) DeleteKeyspace(name string) error {
+func (l *DB) DeleteKeyspace(name string) error {
     err := l.db.Update(func(tx *bolt.Tx) error {
         return tx.DeleteBucket([]byte(name))
     })
