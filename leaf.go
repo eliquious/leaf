@@ -20,7 +20,7 @@ var (
 )
 
 // TxCallback allows for more complex operations on a bucket. It is utilized in the ReadTx and WriteTx functions.
-type TxCallback func(*bolt.Bucket)
+// type TxCallback func(*bolt.Bucket)
 
 // Keyspace is an interface for Database keyspaces. It is used as a wrapper for database actions.
 type Keyspace interface {
@@ -53,10 +53,10 @@ type Keyspace interface {
     Contains(string) (bool, error)
 
     // ReadTx allows for more complicated read operations on a particular key, such as reading nested values.
-    ReadTx(TxCallback) error
+    ReadTx(func(*bolt.Bucket)) error
 
     // WriteTx allows for more complicated write operations on a particular key, such as writing nested values.
-    WriteTx(TxCallback) error
+    WriteTx(func(*bolt.Bucket)) error
 }
 
 // KeyValueDatabase is used as an interface for accessing multiple keyspaces.
@@ -236,7 +236,7 @@ func (b *BoltKeyspace) Contains(key string) (exists bool, err error) {
 }
 
 // ReadTx allows for more complex read operations on the keyspace
-func (b *BoltKeyspace) ReadTx(callback TxCallback) error {
+func (b *BoltKeyspace) ReadTx(callback func(*bolt.Bucket)) error {
     err := b.db.View(func(tx *bolt.Tx) error {
         bkt := tx.Bucket([]byte(b.name))
 
@@ -247,7 +247,7 @@ func (b *BoltKeyspace) ReadTx(callback TxCallback) error {
 }
 
 // WriteTx allows for more complex write operations on the keyspace
-func (b *BoltKeyspace) WriteTx(callback TxCallback) error {
+func (b *BoltKeyspace) WriteTx(callback func(*bolt.Bucket)) error {
     err := b.db.Update(func(tx *bolt.Tx) error {
         bkt := tx.Bucket([]byte(b.name))
 
