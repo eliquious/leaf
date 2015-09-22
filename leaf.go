@@ -74,7 +74,7 @@ type KeyValueDatabase interface {
 
 // NewLeaf creates a connection to a BoltDB file
 func NewLeaf(file string) (KeyValueDatabase, error) {
-    db, err := bolt.Open(file, 0600, nil)
+    db, err := bolt.Open(file, 0755, nil)
     if err != nil {
         return nil, err
     }
